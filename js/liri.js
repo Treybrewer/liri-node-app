@@ -19,15 +19,22 @@ function start() {
             }
         ])
         .then(function (inquirerResponse){
-            console.log(inquirerResponse.app);
+            
+            if(inquirerResponse.app.length > 1) {
+                console.log("I'm sorry I can only do one request at a time!\n I'm just one bot!");
+                return;
+            };
             if(inquirerResponse.app[0] === 'Spotify this song') {
                 spotifyInquierer();
-            }
+            };
             if(inquirerResponse.app[0] === 'Movie this') {
                 omdbRequest();
             };
             if(inquirerResponse.app[0] === 'Concert this') {
                 bandsInTown();
+            };
+            if(inquirerResponse.app[0] === 'Do what it says') {
+                doWhatItSays();
             };
         });
 };
@@ -68,7 +75,6 @@ function omdbRequest() {
         .then(function (inquirerResponse){
             
             movieName.push(inquirerResponse.movieName);
-            console.log(movieName);
             request("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy", function(error, response, body) {
                 if (!error && response.statusCode === 200) {
                 var title = JSON.parse(body).Title;
@@ -106,25 +112,32 @@ function bandsInTown() {
         }
         ])
         .then(function(inquirerResponse) {
-            console.log(inquirerResponse.bandName);
             artist.push(inquirerResponse.bandName);
-            console.log(artist);
             request("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp", function(error, response, body) {
-                // console.log(JSON.parse(body));
                 var venueBody = JSON.parse(body);
                 var venue = venueBody[0].venue.name;
                 var city = venueBody[0].venue.city;
-                var date = venueBody[0].venue.datetime;
+                var state = venueBody[0].venue.region;
+                var date = venueBody[0].datetime;
+                var displayDate = moment(date).format('LLLL');
                 console.log(
+                            chalk.blue("Next Concert:") + "\n",
                     "Venue: " + chalk.blue(venue) + "\n",
                     "City: " + chalk.blue(city) + "\n",
-                    "Date: " + chalk.blue(date) + "\n"
+                    "State: " + chalk.blue(state) + "\n",
+                    "Date: " + chalk.blue(displayDate) + "\n"
 
 
                 );
+                
             });
         });
-}
+};
+function doWhatItSays() {
+    song.push('I want it that way');
+    artist2.push('backstreet boys');
+    liriApp();
+};
 var song = [];
 var artist2 = [];
 function liriApp() {
